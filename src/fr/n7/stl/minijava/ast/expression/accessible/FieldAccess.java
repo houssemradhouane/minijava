@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.expression.accessible;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.cElement.StaticFieldDeclaration;
 import fr.n7.stl.minijava.ast.expression.AbstractField;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.tam.ast.Fragment;
@@ -37,7 +38,16 @@ public class FieldAccess extends AbstractField implements AccessibleExpression {
 		ret.add(Library.IAdd);
 		//ret.add(_factory.createLoadI(this.getType().length()));
 		return ret;*/
-		throw new SemanticsUndefinedException("getCode not defined in FieldAccess");
+		Fragment ret = _factory.createFragment();
+		if (this.field instanceof StaticFieldDeclaration) {
+			StaticFieldDeclaration decl = (StaticFieldDeclaration) this.field;
+			ret.add(_factory.createLoadA(
+					decl.getRegister(), 
+					decl.getOffset()));
+		} else {
+			throw new SemanticsUndefinedException("getCode not defined in FieldAccess for this kind of field");
+		}
+		return ret;
 	}
 
 }

@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.expression.assignable;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.AbstractIdentifier;
 import fr.n7.stl.minijava.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -40,7 +41,10 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 			if (_declaration instanceof VariableDeclaration) {
 				this.declaration = ((VariableDeclaration) _declaration);
 				return true;
-			} else {
+			} else if (_declaration instanceof Classe) {
+				return true;
+			}
+			else {
 				Logger.error("The declaration for " + this.name + " is of the wrong kind : " + _declaration.getClass());
 				return false;
 			}

@@ -1,22 +1,27 @@
 class A {
+
+	public static int nbUtilisation = 0;
 	
-	public static int plus(int a, int b) {
-		return a + b;
+	public static void utiliser() {
+		A.nbUtilisation = A.nbUtilisation + 1;
 	}
 	
 }
 
 class B {
 	
-	public static boolean complementADix(int a, int b) {
-		return A.plus(a, b) == 10;
+	public static int combien() {
+		return A.nbUtilisation;
 	}
 
 }
 
 public class Main {
 	public static void main(String args[]) {
-		boolean b = B.complementADix(4, 6);
-		print b ? 1 : 0;
+		A.utiliser();
+		A.utiliser();
+		A.utiliser();
+		B.combien();
+		print B.combien();
 	}
 }

@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.cElement;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.scope.SymbolTable;
@@ -7,6 +8,7 @@ import fr.n7.stl.minijava.ast.Block;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
+import fr.n7.stl.minijava.ast.type.AtomicType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -28,6 +30,7 @@ public class StaticMethodDeclaration implements ClassElement {
 		this.type = sig.getType();
 		this.name = sig.getNom();
 		this.parametres = sig.getParametres();
+		if (this.parametres == null) this.parametres = new LinkedList<ParameterDeclaration>();
 		this.body = body;
 	}
 
@@ -90,7 +93,7 @@ public class StaticMethodDeclaration implements ClassElement {
 	}
 
 	@Override
-	public void allocateMemory(Register _register, int _offset) {
+	public int allocateMemory(Register _register, int _offset) {
 		int paramOffset = 0;
 		
 		for (ParameterDeclaration p : this.parametres) {
@@ -105,15 +108,18 @@ public class StaticMethodDeclaration implements ClassElement {
 		}
 		
 		this.body.allocateMemory(Register.LB, 3);
+		return 0;
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment ret = _factory.createFragment();
-		//ret.add(_factory.createJump("fin_fct_" + this.id));
+		ret.add(_factory.createJump("fin_static_fct_" + this.id));
+		ret.addSuffix("debut_static_fct_" + this.id);
 		ret.append(this.body.getCode(_factory));
-		ret.addPrefix("debut_static_fct_" +  + this.id);
-		//ret.addSuffix("fin_fct_" + this.id);
+		if (this.type.compatibleWith(AtomicType.VoidType))
+			ret.add(_factory.createReturn(0, 0));
+		ret.addSuffix("fin_static_fct_" + this.id);
 		return ret;
 	}
 	

@@ -15,7 +15,7 @@ public interface Element {
 	
 	public boolean checkType();
 	
-	public void allocateMemory(Register _register, int _offset);
+	public int allocateMemory(Register _register, int _offset);
 	
 	public Fragment getCode(TAMFactory _factory);
 

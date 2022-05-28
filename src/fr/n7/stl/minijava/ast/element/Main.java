@@ -30,15 +30,15 @@ public class Main implements Element {
 	}
 
 	@Override
-	public void allocateMemory(Register _register, int _offset) {
+	public int allocateMemory(Register _register, int _offset) {
 		this.body.allocateMemory(_register, _offset);
+		return 0;
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment ret = _factory.createFragment();
 		ret.append(this.body.getCode(_factory));
-		ret.add(_factory.createHalt());
 		return ret;
 	}
 	

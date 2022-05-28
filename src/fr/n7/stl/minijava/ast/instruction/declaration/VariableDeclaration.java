@@ -134,8 +134,6 @@ public class VariableDeclaration implements Declaration, Instruction {
 		boolean result = this.value.getType().compatibleWith(other);
 		if (!result) {
 			System.err.println("erreur de typage " + this);
-			System.err.println(other);
-			System.err.println(this.value.getType());
 		}
 		return result;
 	}

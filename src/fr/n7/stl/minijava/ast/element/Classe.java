@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.element;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -103,10 +104,12 @@ public class Classe implements Element, Scope<ClassElement>, Declaration {
 	}
 
 	@Override
-	public void allocateMemory(Register _register, int _offset) {
+	public int allocateMemory(Register _register, int _offset) {
+		int taille = 0;
 		for (ClassElement e : this.cElements) {
-			e.allocateMemory(_register, _offset);
+			taille += e.allocateMemory(_register, _offset + taille);
 		}
+		return taille;
 	}
 
 	@Override

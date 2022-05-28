@@ -5,6 +5,7 @@ package fr.n7.stl.minijava.ast.instruction;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.Expression;
+import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.AtomicType;
@@ -83,6 +84,9 @@ public class Return implements Instruction {
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment ret = _factory.createFragment();
 		ret.append(this.value.getCode(_factory));
+		if (this.value instanceof AccessibleExpression) {
+			ret.add(_factory.createLoadI(this.value.getType().length()));
+		}
 		ret.add(_factory.createReturn(this.returnType.length(), this.paramsLength));
 		return ret;
 	}

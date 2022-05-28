@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.expression.assignable;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.cElement.StaticFieldDeclaration;
 import fr.n7.stl.minijava.ast.expression.AbstractField;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Library;
@@ -35,8 +36,17 @@ public class FieldAssignment extends AbstractField implements AssignableExpressi
 		ret.add(_factory.createLoadL(this.field.getOffset()));
 		ret.add(Library.IAdd);
 		return ret;*/
-
-		throw new SemanticsUndefinedException("getCode not defined in FieldAssignment");
+		
+		Fragment ret = _factory.createFragment();
+		if (this.field instanceof StaticFieldDeclaration) {
+			StaticFieldDeclaration decl = (StaticFieldDeclaration) this.field;
+			ret.add(_factory.createLoadA(
+					decl.getRegister(), 
+					decl.getOffset()));
+		} else {
+			throw new SemanticsUndefinedException("getCode not defined in FieldAssignment for this kind of field");
+		}
+		return ret;
 	}
 	
 }

@@ -148,6 +148,7 @@ Program ::= /* retrait miniJava
 			Block:block
 			retrait miniJava */
 			{: 
+				Collections.reverse(elements);
 				SymbolTable tds = new SymbolTable();
 				boolean collectResult = true;
 				for (Element el : elements) {
@@ -159,7 +160,7 @@ Program ::= /* retrait miniJava
 					for (Element el : elements) {
 						resolveResult = resolveResult && el.resolve(tds);
 					}
-					if (collectResult) {
+					if (resolveResult) {
 						System.out.println("Resolve succeeded.");
 						boolean checkTypeResult = true;
 						for (Element el : elements) {
@@ -168,13 +169,17 @@ Program ::= /* retrait miniJava
 						if (checkTypeResult) {
 							System.out.println("CheckType succeeded.");
 							TAMFactoryImpl factory = new TAMFactoryImpl();
+							int offset = 0;
 							for (Element el : elements) {
-								el.allocateMemory(Register.SB, 0);
+								offset += el.allocateMemory(Register.SB, offset);
 							}
 							Fragment fragment = factory.createFragment();;
 							for (Element el : elements) {
 								fragment.append(el.getCode(factory));
 							}
+							if (offset > 0)
+								fragment.add(factory.createPop(0, offset));
+							fragment.add(factory.createHalt());
 							System.out.println(fragment);
 						} else {
 							System.out.println("CheckType failed.");
@@ -411,6 +416,13 @@ Attribute ::=
 		|
 		UL_De_Classe Type:type Identifiant:identifiant UL_Egal Expression:valeur UL_Point_Virgule
 		{:
+			Type _type = identifiant.getRight();
+			if (_type == null) {
+				_type = type;
+			} else {
+				_type = ((PartialType)_type).complete( type );
+ 			}
+			RESULT = new StaticFieldDeclaration(type, identifiant.getLeft(), valeur);
 		:}
 		|
 		UL_De_Classe UL_Definitif Type:type Identifiant:identifiant UL_Egal Expression:valeur UL_Point_Virgule
@@ -726,6 +738,7 @@ Instruction ::= Declaration:declaration
 			/* début ajout miniJava : appel de méthodes sans retour */
 			| Affectable:affectable UL_Point_Virgule
 				{:
+					RESULT = new CallInstruction(affectable);
 				:}
 			/* fin ajout miniJava */
 			| UL_Afficher Expression:expression UL_Point_Virgule
@@ -804,9 +817,11 @@ Affectable ::= UL_Identificateur:nom
 			/* ajout miniJava : appels de méthode */
 			| Affectable:affectable UL_Parenthese_Ouvrante UL_Parenthese_Fermante
 				{:
+					RESULT = new FunctionCall(affectable);
 				:}
 			| Affectable:affectable UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante
 				{:
+					RESULT = new FunctionCall(affectable, parametres);
 				:}
 			/* ajout miniJava */
 			;
@@ -942,6 +957,7 @@ Expression ::= /* TODO (modifications à faire pour 2022) : Affectable:affectabl
 			|
 				Expression:fonction	UL_Parenthese_Ouvrante UL_Parenthese_Fermante                     
              	{:
+					RESULT = new FunctionCall(fonction);
 					/* retrait miniJava
 					List<Expression> _parametres = new LinkedList<Expression>();
 					RESULT = new FunctionCall( nom, _parametres );

@@ -4,12 +4,15 @@
 package fr.n7.stl.minijava.ast.expression;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.cElement.StaticMethodDeclaration;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.expression.accessible.FieldAccess;
+import fr.n7.stl.minijava.ast.expression.assignable.AssignableExpression;
+import fr.n7.stl.minijava.ast.expression.assignable.FieldAssignment;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -22,7 +25,7 @@ import fr.n7.stl.tam.ast.TAMFactory;
  * @author Marc Pantel
  *
  */
-public class FunctionCall implements Expression {
+public class FunctionCall implements Expression, AssignableExpression {
 
 	/**
 	 * Name of the called function.
@@ -49,6 +52,12 @@ public class FunctionCall implements Expression {
 		this.expr = _expr;
 		this.function = null;
 		this.arguments = _arguments;
+	}
+	
+	public FunctionCall(Expression _expr) {
+		this.expr = _expr;
+		this.function = null;
+		this.arguments = new LinkedList<Expression>();
 	}
 
 	/* (non-Javadoc)
@@ -90,8 +99,8 @@ public class FunctionCall implements Expression {
 		}
 		if (!ret) return false;
 		ret = ret && this.expr.fullResolve(_scope);
-		if (this.expr instanceof FieldAccess) {
-			this.function = ((FieldAccess) this.expr).field;
+		if (this.expr instanceof FieldAccess || this.expr instanceof FieldAssignment) {
+			this.function = ((AbstractField) this.expr).field;
 			return ret;
 		} else {
 			System.err.println("resolve error : the function call does not exists.");

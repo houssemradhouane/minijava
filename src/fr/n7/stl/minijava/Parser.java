@@ -754,6 +754,7 @@ class CUP$Parser$actions {
 		List<Element> elements = (List<Element>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG3
  
+				Collections.reverse(elements);
 				SymbolTable tds = new SymbolTable();
 				boolean collectResult = true;
 				for (Element el : elements) {
@@ -774,13 +775,17 @@ class CUP$Parser$actions {
 						if (checkTypeResult) {
 							System.out.println("CheckType succeeded.");
 							TAMFactoryImpl factory = new TAMFactoryImpl();
+							int offset = 0;
 							for (Element el : elements) {
-								el.allocateMemory(Register.SB, 0);
+								offset += el.allocateMemory(Register.SB, offset);
 							}
 							Fragment fragment = factory.createFragment();;
 							for (Element el : elements) {
 								fragment.append(el.getCode(factory));
 							}
+							if (offset > 0)
+								fragment.add(factory.createPop(0, offset));
+							fragment.add(factory.createHalt());
 							System.out.println(fragment);
 						} else {
 							System.out.println("CheckType failed.");
@@ -1347,6 +1352,13 @@ class CUP$Parser$actions {
 		Expression valeur = (Expression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG44
 
+			Type _type = identifiant.getRight();
+			if (_type == null) {
+				_type = type;
+			} else {
+				_type = ((PartialType)_type).complete( type );
+ 			}
+			RESULT = new StaticFieldDeclaration(type, identifiant.getLeft(), valeur);
 		
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Attribute",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1841,6 +1853,7 @@ class CUP$Parser$actions {
 		AssignableExpression affectable = (AssignableExpression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG73
 
+					RESULT = new CallInstruction(affectable);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Instruction",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2102,6 +2115,7 @@ class CUP$Parser$actions {
 		AssignableExpression affectable = (AssignableExpression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		//@@CUPDBG89
 
+					RESULT = new FunctionCall(affectable);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Affectable",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2119,6 +2133,7 @@ class CUP$Parser$actions {
 		List<Expression> parametres = (List<Expression>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG90
 
+					RESULT = new FunctionCall(affectable, parametres);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Affectable",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2541,6 +2556,7 @@ class CUP$Parser$actions {
 		Expression fonction = (Expression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		//@@CUPDBG114
 
+					RESULT = new FunctionCall(fonction);
 					/* retrait miniJava
 					List<Expression> _parametres = new LinkedList<Expression>();
 					RESULT = new FunctionCall( nom, _parametres );
