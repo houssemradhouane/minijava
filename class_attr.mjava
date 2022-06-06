@@ -1,0 +1,15 @@
+class A {
+
+	public static int a = 0;
+	
+}
+
+public class Main {
+	public static void main(String args[]) {
+		print A.a;
+		if (A.a == 0) {
+			A.a = 2;
+		}
+		print A.a;
+	}
+}

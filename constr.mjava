@@ -1,0 +1,16 @@
+class A {
+
+	public int a;
+
+	public A(int a) {
+		this.a = a;
+	}
+	
+}
+
+public class Main {
+	public static void main(String args[]) {
+		A a = new A(5);
+		print a.a;
+	}
+}

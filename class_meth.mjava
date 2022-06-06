@@ -1,0 +1,16 @@
+class A {
+
+	public static int a = 0;
+	
+	public static void ajouter(int n) {
+		A.a = A.a + n;
+	}
+	
+}
+
+public class Main {
+	public static void main(String args[]) {
+		A.ajouter(2);
+		print A.a;
+	}
+}

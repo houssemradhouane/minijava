@@ -1,0 +1,25 @@
+PUSH 1
+LOADL 0
+STORE (1) 0[SB]
+LOADA 0[SB]
+LOADI (1)
+SUBR IOut
+;(A.a == 0)
+LOADA 0[SB]
+LOADI (1)
+LOADL 0
+SUBR IEq
+JUMPIF (0) cond_else_0
+LOADL 2
+LOADA 0[SB]
+STOREI (1)
+POP (0) 0
+JUMP cond_end_0
+cond_else_0
+cond_end_0
+LOADA 0[SB]
+LOADI (1)
+SUBR IOut
+POP (0) 0
+POP (0) 1
+HALT
