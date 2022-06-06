@@ -14,7 +14,7 @@ public interface ClassElement extends Declaration {
 	
 	public boolean checkType();
 	
-	public int allocateMemory(Register _register, int _offset);
+	public int[] allocateMemory(Register _register, int _offset, int _instanceOffset);
 	
 	public Fragment getCode(TAMFactory _factory);
 	

@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.expression;
 
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -97,6 +98,11 @@ public class UnaryExpression implements Expression {
 		}
 		_result.add(TAMFactory.createUnaryOperator(this.operator));
 		return _result;
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.parameter.setInstance(declaration);
 	}
 
 }

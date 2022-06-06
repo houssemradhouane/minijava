@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.expression;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -119,6 +120,13 @@ public class ConditionalExpression implements Expression {
 		ret.addSuffix("cond_exp_end_" + ConditionalExpression.nb);
 		ConditionalExpression.nb++;
 		return ret;
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.condition.setInstance(declaration);
+		this.thenExpression.setInstance(declaration);
+		this.elseExpression.setInstance(declaration);
 	}
 
 }

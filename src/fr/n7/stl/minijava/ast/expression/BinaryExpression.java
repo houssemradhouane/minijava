@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.expression;
 
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -151,6 +152,12 @@ public class BinaryExpression implements Expression {
 		}
 		_result.add(TAMFactory.createBinaryOperator(this.operator));
 		return _result;
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.left.setInstance(declaration);
+		this.right.setInstance(declaration);
 	}
 
 }

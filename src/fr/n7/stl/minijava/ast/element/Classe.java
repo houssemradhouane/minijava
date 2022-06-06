@@ -5,9 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.cElement.ClassElement;
+import fr.n7.stl.minijava.ast.cElement.ConstructeurDeclaration;
+import fr.n7.stl.minijava.ast.cElement.MethodDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.scope.Scope;
+import fr.n7.stl.minijava.ast.type.InstanceType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -17,6 +20,7 @@ public class Classe implements Element, Scope<ClassElement>, Declaration {
 
 	private String nom;
 	private List<ClassElement> cElements;
+	private int instanceLength;
 
 	public Classe(String nom, List<ClassElement> cElements) {
 		this.nom = nom;
@@ -30,7 +34,7 @@ public class Classe implements Element, Scope<ClassElement>, Declaration {
 
 	@Override
 	public Type getType() {
-		return null;
+		return new InstanceType(this);
 	}
 	
 	@Override
@@ -79,6 +83,11 @@ public class Classe implements Element, Scope<ClassElement>, Declaration {
 		if (ret) {
 			_scope.register(this);
 			for (ClassElement e : this.cElements) {
+				if (e instanceof ConstructeurDeclaration) {
+					((ConstructeurDeclaration) e).setType(new InstanceType(this));
+				} else if (e instanceof MethodDeclaration) {
+					((MethodDeclaration) e).setInstanceType(new InstanceType(this));
+				}
 				ret = ret && e.collect(_scope);
 			}
 		}
@@ -106,9 +115,13 @@ public class Classe implements Element, Scope<ClassElement>, Declaration {
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
 		int taille = 0;
+		int instanceOffset = 0;
 		for (ClassElement e : this.cElements) {
-			taille += e.allocateMemory(_register, _offset + taille);
+			int[] r = e.allocateMemory(_register, _offset + taille, instanceOffset);
+			taille += r[0];
+			instanceOffset += r[1];
 		}
+		this.instanceLength = instanceOffset;
 		return taille;
 	}
 
@@ -119,6 +132,10 @@ public class Classe implements Element, Scope<ClassElement>, Declaration {
 			ret.append(e.getCode(_factory));
 		}
 		return ret;
+	}
+
+	public int getInstanceLength() {
+		return this.instanceLength;
 	}
 
 }

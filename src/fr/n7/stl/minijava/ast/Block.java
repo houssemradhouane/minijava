@@ -5,6 +5,7 @@ package fr.n7.stl.minijava.ast;
 
 import java.util.List;
 
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.instruction.Instruction;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -162,6 +163,12 @@ public class Block {
 	public void setParamsLength(int _paramOffset) {
 		for (Instruction i : this.instructions) {
 			i.setParamsLength(_paramOffset);
+		}
+	}
+
+	public void setInstance(Classe declaration) {
+		for (Instruction i : this.instructions) {
+			i.setInstance(declaration);
 		}
 	}
 

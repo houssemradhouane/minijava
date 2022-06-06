@@ -1,27 +1,25 @@
 class A {
 
-	public static int nbUtilisation = 0;
-	
-	public static void utiliser() {
-		A.nbUtilisation = A.nbUtilisation + 1;
+	public int a;
+
+	public A(int a) {
+		this.a = a;
 	}
 	
-}
-
-class B {
-	
-	public static int combien() {
-		return A.nbUtilisation;
+	public void incrA(int val) {
+		this.a = this.a + val;
 	}
-
+	
+	public static A faire(int a) {
+		return new A(a);
+	}
+	
 }
 
 public class Main {
 	public static void main(String args[]) {
-		A.utiliser();
-		A.utiliser();
-		A.utiliser();
-		B.combien();
-		print B.combien();
+		A a = A.faire(1);
+		a.incrA(2);
+		print a.a;
 	}
 }

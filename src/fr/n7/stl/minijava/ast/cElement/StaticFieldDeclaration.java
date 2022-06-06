@@ -62,10 +62,11 @@ public class StaticFieldDeclaration implements ClassElement {
 	}
 
 	@Override
-	public int allocateMemory(Register _register, int _offset) {
+	public int[] allocateMemory(Register _register, int _offset, int _instanceOffset) {
 		this.register = _register;
 		this.offset = _offset;
-		return this.type.length();
+		int[] ret = {this.type.length(), 0};
+		return ret;
 	}
 
 	@Override

@@ -80,4 +80,8 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 		return ret;
 	}
 
+	@Override
+	public void setInstance(Classe declaration) {
+	}
+
 }

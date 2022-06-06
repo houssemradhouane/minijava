@@ -113,4 +113,8 @@ public class IdentifierAccess extends AbstractIdentifier implements AccessibleEx
 		return this.expression.getCode(_factory);
 	}
 
+	@Override
+	public void setInstance(Classe declaration) {
+	}
+
 }

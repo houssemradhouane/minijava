@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.instruction;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.expression.assignable.AssignableExpression;
@@ -111,6 +112,12 @@ public class Assignment implements Instruction, Expression {
 	
 	@Override
 	public void setParamsLength(int _paramOffset) {
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.value.setInstance(declaration);
+		this.assignable.setInstance(declaration);
 	}
 
 }

@@ -8,7 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.cElement.Function;
+import fr.n7.stl.minijava.ast.cElement.MethodDeclaration;
 import fr.n7.stl.minijava.ast.cElement.StaticMethodDeclaration;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.expression.accessible.FieldAccess;
 import fr.n7.stl.minijava.ast.expression.assignable.AssignableExpression;
@@ -37,7 +40,7 @@ public class FunctionCall implements Expression, AssignableExpression {
 	 * Declaration of the called function after name resolution.
 	 * TODO : Should rely on the VariableUse class.
 	 */
-	protected Declaration function;
+	protected Function function;
 	
 	/**
 	 * List of AST nodes that computes the values of the parameters for the function call.
@@ -85,7 +88,7 @@ public class FunctionCall implements Expression, AssignableExpression {
 		for (Expression a : this.arguments) {
 			ret = ret && a.collectAndBackwardResolve(_scope);
 		}
-		return ret;
+		return ret && this.expr.collectAndBackwardResolve(_scope);
 	}
 
 	/* (non-Javadoc)
@@ -99,9 +102,21 @@ public class FunctionCall implements Expression, AssignableExpression {
 		}
 		if (!ret) return false;
 		ret = ret && this.expr.fullResolve(_scope);
-		if (this.expr instanceof FieldAccess || this.expr instanceof FieldAssignment) {
-			this.function = ((AbstractField) this.expr).field;
-			return ret;
+		if ((this.expr instanceof FieldAccess || this.expr instanceof FieldAssignment) && ((AbstractField) this.expr).field instanceof Function) {
+			this.function = (Function) ((AbstractField) this.expr).field;
+			if (this.function.getParametres().size() == this.arguments.size()) {
+				for (int i = 0; i < this.arguments.size(); i++) {
+					if (!this.arguments.get(i).getType().compatibleWith(this.function.getParametres().get(i).getType())) {
+						System.err.println("resolve error : the function call does not exists.");
+						return false;
+					}
+				}
+				return true;
+			} else {
+				System.err.println("resolve error : the function call does not exists.");
+				return false;
+			}
+			
 		} else {
 			System.err.println("resolve error : the function call does not exists.");
 			return false;
@@ -140,6 +155,10 @@ public class FunctionCall implements Expression, AssignableExpression {
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment ret = _factory.createFragment();
+		if (function instanceof MethodDeclaration && ((AbstractField) this.expr).expr instanceof AbstractIdentifier) {
+			ret.append(((AbstractField) this.expr).expr.getCode(_factory));
+			ret.add(_factory.createLoadI(((AbstractIdentifier)((AbstractField) this.expr).expr).getType().length()));
+		}
 		for (Expression a : this.arguments) {
 			ret.append(a.getCode(_factory));
 			if (a instanceof AccessibleExpression) {
@@ -148,7 +167,18 @@ public class FunctionCall implements Expression, AssignableExpression {
 		}
 		if (function instanceof StaticMethodDeclaration)
 			ret.add(_factory.createCall("debut_static_fct_" + ((StaticMethodDeclaration) this.function).getId(), Register.LB));
+		else if (function instanceof MethodDeclaration) {
+			ret.add(_factory.createCall("debut_fct_" + ((MethodDeclaration) this.function).getId(), Register.LB));
+			ret.add(_factory.createPop(0, 1));
+		}
 		return ret;
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		for (Expression e : this.arguments) {
+			e.setInstance(declaration);
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.instruction;
 
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.FunctionCall;
 import fr.n7.stl.minijava.ast.expression.assignable.AssignableExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -60,6 +61,11 @@ public class CallInstruction implements Instruction {
 	public void setParamsLength(int _paramOffset) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.fc.setInstance(declaration);
 	}
 
 }

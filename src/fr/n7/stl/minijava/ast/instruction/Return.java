@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.instruction;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -99,6 +100,11 @@ public class Return implements Instruction {
 	
 	public void setParamsLength(int _paramsLength) {
 		this.paramsLength = _paramsLength;
+	}
+	
+	@Override
+	public void setInstance(Classe declaration) {
+		this.value.setInstance(declaration);
 	}
 
 }

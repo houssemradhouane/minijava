@@ -1,16 +1,18 @@
 package fr.n7.stl.minijava.ast.expression;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.cElement.FieldDeclaration;
 import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.accessible.FieldAccess;
 import fr.n7.stl.minijava.ast.expression.accessible.IdentifierAccess;
 import fr.n7.stl.minijava.ast.expression.assignable.FieldAssignment;
+import fr.n7.stl.minijava.ast.expression.assignable.ThisAssignment;
 import fr.n7.stl.minijava.ast.expression.assignable.VariableAssignment;
 import fr.n7.stl.minijava.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
+import fr.n7.stl.minijava.ast.type.InstanceType;
 import fr.n7.stl.minijava.ast.type.Type;
-import fr.n7.stl.minijava.ast.type.declaration.FieldDeclaration;
 
 /**
  * Common elements between left (Assignable) and right (Expression) end sides of assignments. These elements
@@ -55,19 +57,27 @@ public abstract class AbstractField implements Expression {
 	 */
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
+		if (this.expr instanceof ThisAssignment) {
+			this.field = ((ThisAssignment) this.expr).getClasse().get(this.name);
+			if (this.field instanceof FieldDeclaration) {
+				return this.expr.fullResolve(_scope);
+			} else {
+				System.err.println(this.name + " n'est pas un champ d'instance.");
+				return false;
+			}
+		}
 		if (this.expr instanceof IdentifierAccess || this.expr instanceof VariableAssignment) {
 			AbstractIdentifier _local = (AbstractIdentifier) this.expr;
 			Declaration _decl = _scope.get(_local.name);
 			if (_decl instanceof VariableDeclaration) {
 				Type T = ((VariableDeclaration) _decl).getType();
-				throw new SemanticsUndefinedException( "Semantics collect is undefined in AbstractField.");
-				/*if (T instanceof RecordType) {
-					RecordType _recT = (RecordType) T;
-					if (_recT.contains(this.name)) {
-						this.field = _recT.get(this.name);
-						return this.record.fullResolve(_scope);
+				if (T instanceof InstanceType) {
+					InstanceType inT = (InstanceType) T;
+					if (inT.getDeclaration().contains(this.name)) {
+						this.field = inT.getDeclaration().get(this.name);
+						return this.expr.fullResolve(_scope);
 					}
-				}*/
+				}
 			} else if (_decl instanceof Classe) {
 				// Variable ou Méthode de classe
 				Classe cl = (Classe) _decl;
@@ -82,7 +92,7 @@ public abstract class AbstractField implements Expression {
 			if (!_local.fullResolve(_scope))
 				return false;
 			Type T = _local.field.getType();
-			throw new SemanticsUndefinedException( "Semantics collect is undefined in AbstractField.");
+			throw new SemanticsUndefinedException( "Semantics resolve is undefined in AbstractField.");
 			/*if (T instanceof RecordType) {
 				RecordType _recT = (RecordType) T;
 				if (_recT.contains(this.name)) {

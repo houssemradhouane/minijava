@@ -3,6 +3,7 @@
  */
 package fr.n7.stl.minijava.ast.instruction;
 
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -63,5 +64,7 @@ public interface Instruction {
 	public void setReturnType(Type _type);
 
 	public void setParamsLength(int _paramOffset);
+
+	public void setInstance(Classe declaration);
 
 }

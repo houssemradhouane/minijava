@@ -4,11 +4,18 @@
 package fr.n7.stl.minijava.ast.expression.assignable;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.cElement.FieldDeclaration;
 import fr.n7.stl.minijava.ast.cElement.StaticFieldDeclaration;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.AbstractField;
+import fr.n7.stl.minijava.ast.expression.BinaryOperator;
+import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Library;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.tam.ast.TAMInstruction;
+import fr.n7.stl.tam.ast.impl.TAMFactoryImpl;
 
 /**
  * Abstract Syntax Tree node for an expression whose computation assigns a field in a record.
@@ -43,10 +50,23 @@ public class FieldAssignment extends AbstractField implements AssignableExpressi
 			ret.add(_factory.createLoadA(
 					decl.getRegister(), 
 					decl.getOffset()));
+		} else if (this.field instanceof FieldDeclaration) {
+			FieldDeclaration decl = (FieldDeclaration) this.field;
+			ret.append(this.expr.getCode(_factory));
+			if (this.expr instanceof AccessibleExpression) {
+				ret.add(_factory.createLoadI(this.expr.getType().length()));
+			}
+			ret.add(_factory.createLoadL(decl.getOffset()));
+			ret.add(TAMFactory.createBinaryOperator(BinaryOperator.Add));
 		} else {
 			throw new SemanticsUndefinedException("getCode not defined in FieldAssignment for this kind of field");
 		}
 		return ret;
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.expr.setInstance(declaration);
 	}
 	
 }

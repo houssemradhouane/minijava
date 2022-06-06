@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.expression.accessible;
 
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.AbstractConversion;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -17,6 +18,11 @@ public class AccessibleConversion extends AbstractConversion<Expression> impleme
 
 	public AccessibleConversion(Expression _target, Type _type) {
 		super(_target, _type);
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.target.setInstance(declaration);
 	}
 
 }

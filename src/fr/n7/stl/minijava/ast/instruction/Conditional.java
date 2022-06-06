@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import fr.n7.stl.minijava.ast.Block;
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.expression.accessible.AccessibleExpression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -128,6 +129,15 @@ public class Conditional implements Instruction {
 		this.thenBranch.setParamsLength(_paramOffset);
 		if (this.elseBranch != null)
 			this.elseBranch.setParamsLength(_paramOffset);
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.condition.setInstance(declaration);
+		this.thenBranch.setInstance(declaration);
+		if (this.elseBranch != null) {
+			this.elseBranch.setInstance(declaration);
+		}
 	}
 
 }

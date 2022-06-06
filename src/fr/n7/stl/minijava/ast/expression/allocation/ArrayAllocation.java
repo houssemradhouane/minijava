@@ -4,6 +4,7 @@
 package fr.n7.stl.minijava.ast.expression.allocation;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.element.Classe;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -77,6 +78,11 @@ public class ArrayAllocation implements Expression {
 		ret.add(Library.IMul);
 		ret.add(Library.MAlloc);
 		return ret;
+	}
+
+	@Override
+	public void setInstance(Classe declaration) {
+		this.size.setInstance(declaration);
 	}
 
 }
